@@ -1,51 +1,58 @@
-import qr from "qr-image";
+import QRCode from "qrcode";
 import express from "express";
 import dotenv from "dotenv";
 import fs from "fs";
+import sharp from "sharp";
+import { Readable } from "stream";
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 
-function startsWith(token, str) {
-  console.assert(token.length <= str.length);
-  for (let i = 0; i < token.length; i++) {
-    if (token[i] != str[i]) {
-      return false;
-    }
-  }
-  return true;
+app.use("/output", express.static("output"));
+
+// Helper to sanitize filename
+function sanitizeFilename(str) {
+  return str.replace(/[^a-z0-9]/gi, "_").toLowerCase();
 }
 
-app.post("/generate", (req, res) => {
-  try {
-    if (!fs.existsSync("./output")) {
-      fs.mkdirSync("./output");
-    }
-    const url = req.body.url;
-    const sanitizedUrl = url
-      .trim()
-      .replace("https://", "")
-      .replace("http://", "");
-    console.log(sanitizedUrl);
-    const outPath = `./output/${sanitizedUrl}.png`;
-    const code = qr.imageSync(sanitizedUrl, {
-      type: "png",
+// Helper to turn a buffer into a stream
+function bufferToStream(buffer) {
+  return Readable.from(buffer);
+}
 
-      parse_url: true,
+app.post("/generate", async (req, res) => {
+  const url = req.body.url;
+  const safeName = sanitizeFilename(url);
+  const outputPath = `./output/final_${safeName}.png`;
+
+  try {
+    if (!fs.existsSync("./output")) fs.mkdirSync("./output");
+
+    const qrBuffer = await QRCode.toBuffer(url, {
+      errorCorrectionLevel: "H",
+      width: 256,
     });
-    fs.writeFileSync(outPath, code);
-    res.status(200).json({ message: "success", success: true });
-  } catch (e) {
-    res.status(400).json({ message: "Error", success: false });
-    console.error(e);
+
+    const resizedOverlayBuffer = await sharp("overlay.png")
+      .resize(100)
+      .png()
+      .toBuffer();
+
+    await sharp(qrBuffer)
+      .composite([{ input: resizedOverlayBuffer, blend: "over" }])
+      .toFile(outputPath);
+
+    res.json({
+      success: true,
+      finalQR: `/output/final_${safeName}.png`,
+    });
+  } catch (err) {
+    console.error("error:", err);
+    res.status(500).json({ success: false });
   }
 });
 
-app.get("/", (req, res) => {
-  res.status(200).send("Hello World!");
-});
-
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on port ${process.env.PORT}`);
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`Server running on port ${process.env.PORT || 3000}`);
 });
