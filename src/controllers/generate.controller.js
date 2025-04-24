@@ -4,8 +4,8 @@ import sharp from "sharp";
 import axios from "axios";
 
 function sanitizeFilename(str) {
-    return str.replace(/[^a-z0-9]/gi, "_").toLowerCase();
-  }
+  return str.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+}
 
 export const normal = async (req, res) => {
   const url = req.body.url;
@@ -20,7 +20,7 @@ export const normal = async (req, res) => {
       width: 256,
     });
 
-    res.json({
+    res.status(200).json({
       success: true,
       finalQR: `/output/${safeName}.png`,
     });
