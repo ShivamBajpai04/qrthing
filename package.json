@@ -1,23 +1,28 @@
 {
   "name": "qrthing",
-  "version": "1.0.0",
-  "description": "",
-  "main": "src/index.js",
-  "type": "module",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.8.1",
   "dependencies": {
-    "axios": "^1.8.4",
-    "dotenv": "^16.5.0",
-    "express": "^5.1.0",
-    "morgan": "^1.10.0",
+    "axios": "^1.9.0",
+    "next": "15.3.1",
     "qrcode": "^1.5.4",
-    "sharp": "^0.34.1"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/next": "^9.0.0",
+    "@types/node": "^20",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }

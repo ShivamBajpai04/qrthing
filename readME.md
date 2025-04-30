@@ -1,8 +1,8 @@
 
 ### **TODO** :
 
+- [+] Web Risk
 - [] FrontEnd
 - [] TS Port
-- [] Web Risk
 - [] Batch creation
 - [] Domain

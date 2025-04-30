@@ -2,36 +2,15 @@ import QRCode from "qrcode";
 import fs from "fs";
 import sharp from "sharp";
 import axios from "axios";
+import { NextRequest, NextResponse } from "next/server";
+import { URL } from "url";
 
-function sanitizeFilename(str) {
+function sanitizeFilename(str: String) {
   return str.replace(/[^a-z0-9]/gi, "_").toLowerCase();
 }
 
-export const normal = async (req, res) => {
-  const url = req.body.url;
-  const safeName = sanitizeFilename(url);
-  const outputPath = `./output/${safeName}.png`;
-
-  try {
-    if (!fs.existsSync("./output")) fs.mkdirSync("./output");
-
-    await QRCode.toFile(outputPath, url, {
-      errorCorrectionLevel: "H",
-      width: 256,
-    });
-
-    res.status(200).json({
-      success: true,
-      finalQR: `/output/${safeName}.png`,
-    });
-  } catch (err) {
-    console.error("error:", err);
-    res.status(500).json({ success: false });
-  }
-};
-
-export const custom = async (req, res) => {
-  const url = req.body.url;
+export async function POST(req: NextRequest) {
+  const { url } = await req.json();
   const safeName = sanitizeFilename(url);
   const outputPath = `./output/${safeName}_custom.png`;
 
@@ -61,12 +40,20 @@ export const custom = async (req, res) => {
       .composite([{ input: resizedOverlayBuffer, blend: "over" }])
       .toFile(outputPath);
 
-    res.json({
-      success: true,
-      finalQR: `/output/${safeName}_custom.png`,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        finalQR: `/output/${safeName}_custom.png`,
+      },
+      { status: 200 }
+    );
   } catch (err) {
     console.error("error:", err);
-    res.status(500).json({ success: false });
+    return NextResponse.json(
+      {
+        success: false,
+      },
+      { status: 400 }
+    );
   }
-};
+}
