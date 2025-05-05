@@ -4,6 +4,20 @@ import sharp from "sharp";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import { URL } from "url";
+import prisma from "@/lib/prisma";
+
+function hasher(str: String) {
+  var hash = 0,
+    i,
+    chr;
+  if (str.length === 0) return hash;
+  for (i = 0; i < str.length; i++) {
+    chr = str.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0;
+  }
+  return hash;
+}
 
 function sanitizeFilename(str: String) {
   return str.replace(/[^a-z0-9]/gi, "_").toLowerCase();
@@ -11,13 +25,14 @@ function sanitizeFilename(str: String) {
 
 export async function POST(req: NextRequest) {
   const { url } = await req.json();
-  const safeName = sanitizeFilename(url);
+  const hash = hasher(url).toString();
+  const safeName = sanitizeFilename(hash);
   const outputPath = `./output/${safeName}_custom.png`;
 
   try {
     if (!fs.existsSync("./output")) fs.mkdirSync("./output");
 
-    const qrBuffer = await QRCode.toBuffer(url, {
+    const qrBuffer = await QRCode.toBuffer(`${process.env.API_LINK}/${hash}`, {
       errorCorrectionLevel: "H",
       width: 256,
     });
@@ -40,6 +55,12 @@ export async function POST(req: NextRequest) {
       .composite([{ input: resizedOverlayBuffer, blend: "over" }])
       .toFile(outputPath);
 
+    await prisma.url.create({
+      data: {
+        url,
+        hash,
+      },
+    });
     return NextResponse.json(
       {
         success: true,
