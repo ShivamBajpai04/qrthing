@@ -19,7 +19,7 @@ export async function GET(
     });
     await prisma.url.update({
       where: { hash: hash },
-      data: { accessCount: { increment: 1 } },
+      data: { accessCount: { increment: 1 }, lastAccessedAt: new Date() },
     });
     if (!url) {
       return NextResponse.json(
@@ -32,8 +32,20 @@ export async function GET(
     console.log(ip);
     const location = await axios.get(`http://ip-api.com/json/${ip}`);
     console.log(location.data);
+    await prisma.scan.create({
+      data: {
+        latitude: location.data.lat,
+        longitude: location.data.lon,
+        Url: {
+          connect: {
+            id: url.id,
+          },
+        },
+      },
+    });
     return NextResponse.redirect(url.url);
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ success: false }, { status: 400 });
   }
 }

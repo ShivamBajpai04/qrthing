@@ -28,7 +28,10 @@ export async function POST(req: NextRequest) {
   const hash = hasher(url).toString();
   const safeName = sanitizeFilename(hash);
   const outputPath = `./output/${safeName}_custom.png`;
-
+  // const dbHash = prisma.url.findUnique({ where: { hash: hash } });
+  // if(dbHash){
+  //   return 
+  // }
   try {
     if (!fs.existsSync("./output")) fs.mkdirSync("./output");
 
@@ -39,10 +42,8 @@ export async function POST(req: NextRequest) {
     const host = new URL(url).hostname;
     console.log(host);
     const overlayBuffer = await axios(
-      `https://s2.googleusercontent.com/s2/favicons?domain=${host}`,
-      {
-        responseType: "arraybuffer",
-      }
+      `https://www.google.com/s2/favicons?sz=64&domain=${host}`,
+      { responseType: "arraybuffer" }
     );
 
     const resizedOverlayBuffer = await sharp(overlayBuffer.data)

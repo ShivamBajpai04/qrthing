@@ -48,3 +48,4 @@ prisma/*.db-journal
 prisma/migrations/
 .prisma/
 .env
+settings.json
