@@ -9,7 +9,7 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
 
   for (const middleware of middlewareFunctions) {
     const result = await middleware;
-    if (!result?.ok) {
+    if (result && result !== nextResponse) {
       return result;
     }
   }
@@ -18,6 +18,9 @@ export async function middleware(req: NextRequest, event: NextFetchEvent) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|.*svg|.*png|.*jpg|.*jpeg|.*gif|.*webp|_next/image|favicon.ico).*)",
+    // Include all routes, including API routes
+    "/(.*)",
+    // Exclude static assets and images
+    "/((?!_next/static|.*svg|.*png|.*jpg|.*jpeg|.*gif|.*webp|_next/image|favicon.ico).*)",
   ],
 };

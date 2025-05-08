@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
+import { corsHeaders } from "@/lib/api-utils";
 
 export async function GET(
   req: NextRequest,
@@ -11,27 +12,32 @@ export async function GET(
     if (!hash) {
       return NextResponse.json(
         { success: false, message: "Hash not provided" },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
     const url = await prisma.url.findUnique({
       where: { hash: hash },
     });
+    
+    if (!url) {
+      return NextResponse.json(
+        { success: false, message: "URL not found" },
+        { status: 404, headers: corsHeaders }
+      );
+    }
+    
+    // Update access count
     await prisma.url.update({
       where: { hash: hash },
       data: { accessCount: { increment: 1 }, lastAccessedAt: new Date() },
     });
-    if (!url) {
-      return NextResponse.json(
-        { success: false, message: "URL not found" },
-        { status: 404 }
-      );
-    }
+    
     const ip = req.headers.get("x-forwarded-for");
 
     console.log(ip);
     const location = await axios.get(`http://ip-api.com/json/${ip}`);
     console.log(location.data);
+    
     await prisma.scan.create({
       data: {
         latitude: location.data.lat,
@@ -46,6 +52,9 @@ export async function GET(
     return NextResponse.redirect(url.url);
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ success: false }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: (error as Error).message },
+      { status: 400, headers: corsHeaders }
+    );
   }
 }
