@@ -1,15 +1,23 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+import type { NextRequest, NextFetchEvent } from "next/server";
+import { middleware as activatedMiddleware } from "@/middleware/config";
 
-const isPublicRoute = createRouteMatcher(["/sign-in(.*)", "/api(.*)"]);
+export async function middleware(req: NextRequest, event: NextFetchEvent) {
+  const nextResponse = NextResponse.next();
 
-export default clerkMiddleware(async (auth, req) => {
-  if (!isPublicRoute(req)) {
-    await auth.protect();
+  const middlewareFunctions = activatedMiddleware.map((fn) => fn(req, event));
+
+  for (const middleware of middlewareFunctions) {
+    const result = await middleware;
+    if (!result?.ok) {
+      return result;
+    }
   }
-});
+  return nextResponse;
+}
 
 export const config = {
   matcher: [
-    
+    "/((?!api|_next/static|.*svg|.*png|.*jpg|.*jpeg|.*gif|.*webp|_next/image|favicon.ico).*)",
   ],
 };
