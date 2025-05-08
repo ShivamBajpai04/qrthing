@@ -1,5 +1,5 @@
-import cloudinary from './cloudinary';
-import { Readable } from 'stream';
+import cloudinary from "./cloudinary";
+import { Readable } from "stream";
 
 /**
  * CloudinaryUploadResult interface for type safety
@@ -29,18 +29,11 @@ export interface CloudinaryUploadResult {
  * @returns Promise resolving to the Cloudinary upload result
  */
 export async function uploadBufferToCloudinary(
-  buffer: Buffer, 
-  folder = 'qr-codes',
+  buffer: Buffer,
+  folder = "qr-codes",
   publicId?: string
 ): Promise<CloudinaryUploadResult> {
-  // Check if Cloudinary credentials are present
-  if (!process.env.CLOUDINARY_CLOUD_NAME || 
-      !process.env.CLOUDINARY_API_KEY || 
-      !process.env.CLOUDINARY_API_SECRET) {
-    throw new Error("Cloudinary credentials are missing. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in your .env.local file.");
-  }
 
-  // Upload to Cloudinary
   return new Promise<CloudinaryUploadResult>((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
@@ -57,7 +50,7 @@ export async function uploadBufferToCloudinary(
         resolve(result as CloudinaryUploadResult);
       }
     );
-    
+
     // Convert buffer to stream and pipe to Cloudinary
     const bufferStream = new Readable();
     bufferStream.push(buffer);
@@ -75,7 +68,7 @@ export async function uploadBufferToCloudinary(
  */
 export async function uploadFileToCloudinary(
   file: File,
-  folder = 'qr-codes',
+  folder = "qr-codes",
   publicId?: string
 ): Promise<CloudinaryUploadResult> {
   const arrayBuffer = await file.arrayBuffer();

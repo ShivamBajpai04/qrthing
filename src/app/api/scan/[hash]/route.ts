@@ -5,9 +5,9 @@ import { corsHeaders } from "@/lib/api-utils";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { hash: string } }
+  context: { params: { hash: string } }
 ) {
-  const { hash } = await params;
+  const { hash } = context.params;
   try {
     if (!hash) {
       return NextResponse.json(
@@ -18,26 +18,26 @@ export async function GET(
     const url = await prisma.url.findUnique({
       where: { hash: hash },
     });
-    
+
     if (!url) {
       return NextResponse.json(
         { success: false, message: "URL not found" },
         { status: 404, headers: corsHeaders }
       );
     }
-    
+
     // Update access count
     await prisma.url.update({
       where: { hash: hash },
       data: { accessCount: { increment: 1 }, lastAccessedAt: new Date() },
     });
-    
+
     const ip = req.headers.get("x-forwarded-for");
 
     console.log(ip);
     const location = await axios.get(`http://ip-api.com/json/${ip}`);
     console.log(location.data);
-    
+
     await prisma.scan.create({
       data: {
         latitude: location.data.lat,
