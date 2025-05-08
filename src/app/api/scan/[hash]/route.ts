@@ -3,11 +3,12 @@ import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import { corsHeaders } from "@/lib/api-utils";
 
+// This is the standard App Router pattern for route handlers with dynamic segments
 export async function GET(
-  req: NextRequest,
-  context: { params: { hash: string } }
+  request: NextRequest,
+  context: { params: Promise<{ hash: string }> }
 ) {
-  const { hash } = context.params;
+  const { hash } = await context.params;
   try {
     if (!hash) {
       return NextResponse.json(
@@ -15,8 +16,9 @@ export async function GET(
         { status: 400, headers: corsHeaders }
       );
     }
+
     const url = await prisma.url.findUnique({
-      where: { hash: hash },
+      where: { hash },
     });
 
     if (!url) {
@@ -28,13 +30,13 @@ export async function GET(
 
     // Update access count
     await prisma.url.update({
-      where: { hash: hash },
+      where: { hash },
       data: { accessCount: { increment: 1 }, lastAccessedAt: new Date() },
     });
 
-    const ip = req.headers.get("x-forwarded-for");
-
+    const ip = request.headers.get("x-forwarded-for");
     console.log(ip);
+
     const location = await axios.get(`http://ip-api.com/json/${ip}`);
     console.log(location.data);
 
@@ -49,6 +51,7 @@ export async function GET(
         },
       },
     });
+
     return NextResponse.redirect(url.url);
   } catch (error) {
     console.error(error);
