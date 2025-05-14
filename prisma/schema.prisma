@@ -10,8 +10,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Scan {
@@ -23,12 +24,12 @@ model Scan {
 }
 
 model Url {
-  id             Int      @id @default(autoincrement())
-  hash           String   @unique
+  id             Int       @id @default(autoincrement())
+  hash           String    @unique
   url            String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  accessCount    Int      @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  accessCount    Int       @default(0)
   lastAccessedAt DateTime?
   scans          Scan[]
 }

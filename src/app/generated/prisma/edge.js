@@ -168,16 +168,17 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "postgresql://gis:password@localhost:5432/gis"
+        "value": null
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/app/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Scan {\n  id        Int   @id @default(autoincrement())\n  latitude  Float\n  longitude Float\n  urlId     Int?\n  Url       Url?  @relation(fields: [urlId], references: [id])\n}\n\nmodel Url {\n  id             Int       @id @default(autoincrement())\n  hash           String    @unique\n  url            String\n  createdAt      DateTime  @default(now())\n  updatedAt      DateTime  @updatedAt\n  accessCount    Int       @default(0)\n  lastAccessedAt DateTime?\n  scans          Scan[]\n}\n",
-  "inlineSchemaHash": "412ce535010fa1d3ed65aa567806dd631014a3a87ff17dd07b54ae0fce58a30e",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/app/generated/prisma\"\n}\n\ndatasource db {\n  provider  = \"postgresql\"\n  url       = env(\"DATABASE_URL\")\n  directUrl = env(\"DIRECT_URL\")\n}\n\nmodel Scan {\n  id        Int   @id @default(autoincrement())\n  latitude  Float\n  longitude Float\n  urlId     Int?\n  Url       Url?  @relation(fields: [urlId], references: [id])\n}\n\nmodel Url {\n  id             Int       @id @default(autoincrement())\n  hash           String    @unique\n  url            String\n  createdAt      DateTime  @default(now())\n  updatedAt      DateTime  @updatedAt\n  accessCount    Int       @default(0)\n  lastAccessedAt DateTime?\n  scans          Scan[]\n}\n",
+  "inlineSchemaHash": "f056f45dd01ed9fc1bd3168adf068e59b45d7c31b1aad92aa1a9713aa4e8b897",
   "copyEngine": true
 }
 config.dirname = '/'

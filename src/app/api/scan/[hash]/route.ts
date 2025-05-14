@@ -1,7 +1,9 @@
+import { Resend } from "resend";
 import prisma from "@/lib/prisma";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import { corsHeaders } from "@/lib/api-utils";
+import { sendScanNotification } from "@/lib/email";
 
 // This is the standard App Router pattern for route handlers with dynamic segments
 export async function GET(
@@ -51,6 +53,20 @@ export async function GET(
         },
       },
     });
+
+    // const resend = new Resend("re_3RvgNDJ9_MtvSDo3kTijssX6HiYuFSFUH");
+
+    // resend.emails.send({
+    //   from: "onboarding@resend.dev",
+    //   to: "shivambajpai04@gmail.com",
+    //   subject: "Hello World",
+    //   html: "<p>Congrats on sending your <strong>first email</strong>!</p>",
+    // });
+    sendScanNotification(
+      url.url,
+      "shivambajpai04.work@gmail.com",
+      location.data.city
+    );
 
     return NextResponse.redirect(url.url);
   } catch (error) {
