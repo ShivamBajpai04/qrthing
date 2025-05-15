@@ -1,20 +1,17 @@
-import { NextResponse } from "next/server";
-import type { NextRequest, NextFetchEvent } from "next/server";
-import { middleware as activatedMiddleware } from "@/middleware/config";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-export async function middleware(req: NextRequest, event: NextFetchEvent) {
-  const nextResponse = NextResponse.next();
+const isPublicRoute = createRouteMatcher([
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/api(.*)",
+  "/",
+]);
 
-  const middlewareFunctions = activatedMiddleware.map((fn) => fn(req, event));
-
-  for (const middleware of middlewareFunctions) {
-    const result = await middleware;
-    if (result && result !== nextResponse) {
-      return result;
-    }
+export default clerkMiddleware(async (auth, req) => {
+  if (!isPublicRoute(req)) {
+    await auth.protect();
   }
-  return nextResponse;
-}
+});
 
 export const config = {
   matcher: [

@@ -1,21 +1,16 @@
-import { type Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
-import { Geist, Geist_Mono } from "next/font/google";
+import type React from "react";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
+import { Providers } from "@/components/providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "QRthing",
-  description: "Generate QRs and get Analytics",
+  title: "QRthing - Smart QR Code Analytics",
+  description:
+    "Create, manage, and analyze QR codes with powerful analytics. Track scans, locations, and more in real-time.",
 };
 
 export default function RootLayout({
@@ -24,12 +19,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider afterSignOutUrl="/">
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          {children}
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body className={inter.className}>
+          <Providers
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </Providers>
         </body>
       </html>
     </ClerkProvider>

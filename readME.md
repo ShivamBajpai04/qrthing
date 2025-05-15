@@ -15,10 +15,12 @@ A Next.js application for generating customizable QR codes with security feature
 
 ### TODO
 
-- [ ] Enhanced Frontend UI
 - [ ] Batch QR code creation
 - [ ] Custom domain configuration
 - [ ] Analytics dashboard
+- [ ] Email notifications
+- [ ] Edge
+- [ ] User Logic/Webhooks
 
 ## API Routes
 
