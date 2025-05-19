@@ -11,6 +11,9 @@ export async function GET(
   context: { params: Promise<{ hash: string }> }
 ) {
   const { hash } = await context.params;
+  const url = await prisma.url.findUnique({
+    where: { hash },
+  });
   try {
     if (!hash) {
       return NextResponse.json(
@@ -18,10 +21,6 @@ export async function GET(
         { status: 400, headers: corsHeaders }
       );
     }
-
-    const url = await prisma.url.findUnique({
-      where: { hash },
-    });
 
     if (!url) {
       return NextResponse.json(
@@ -62,18 +61,15 @@ export async function GET(
     //   subject: "Hello World",
     //   html: "<p>Congrats on sending your <strong>first email</strong>!</p>",
     // });
-    sendScanNotification(
-      url.url,
-      "shivambajpai04.work@gmail.com",
-      location.data.city
-    );
+    // sendScanNotification(
+    //   url.url,
+    //   url.creatorId,
+    //   location.data.city
+    // );
 
     return NextResponse.redirect(url.url);
   } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      { success: false, error: (error as Error).message },
-      { status: 400, headers: corsHeaders }
-    );
+    return NextResponse.redirect(url ? url.url : "google.com");
   }
 }

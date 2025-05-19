@@ -24,18 +24,81 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import axios from "axios";
+import Image from "next/image";
+import { useUserContext } from "@/context/user-context";
 
 export default function CreatePage() {
+  const { clerkUser, refreshQrCodes } = useUserContext();
   const [qrType, setQrType] = useState("url");
+  const [url, setUrl] = useState("");
+  const [name, setName] = useState("");
+  const [custom, setCustom] = useState(false);
+  const [image, setImage] = useState<String | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null); // Function to handle QR code generation
+  const handleGenerateQrCode = async () => {
+    // Form validation
+    if (!url) {
+      setError("URL is required");
+      return;
+    }
 
+    // Clear previous errors and set loading state
+    setError(null);
+    setIsLoading(true);
+
+    // Ensure name has a value
+    const qrName = name || "Untitled QR Code";
+
+    console.log("Submitting:", {
+      url,
+      name: qrName,
+      custom,
+      creatorId: clerkUser?.id || "anonymous",
+    });
+
+    try {
+      if (custom) {
+        const response = await axios.post("/api/generate/custom", {
+          url,
+          name: qrName,
+          creatorId: clerkUser?.id || "anonymous",
+        });
+        console.log("QR Code generated:", response.data);
+        if (response.data.success && response.data.path) {
+          setImage(response.data.path);
+        } else {
+          setError("Failed to generate QR code");
+        }
+      } else {
+        const response = await axios.post("/api/generate", {
+          url,
+          name: qrName,
+          creatorId: clerkUser?.id || "anonymous",
+        });
+        console.log("QR Code generated:", response.data);
+        if (response.data.success && response.data.path) {
+          setImage(response.data.path);
+        } else {
+          setError("Failed to generate QR code");
+        }
+      }
+    } catch (error) {
+      console.error("Error generating QR code:", error);
+      setError("An error occurred while generating the QR code");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-2xl font-bold tracking-tight">Create QR Code</h2>
       <Tabs defaultValue="basic" className="space-y-4">
         <TabsList>
           <TabsTrigger value="basic">Basic</TabsTrigger>
-          <TabsTrigger value="advanced">Advanced</TabsTrigger>
-          <TabsTrigger value="design">Design</TabsTrigger>
+          {/* <TabsTrigger value="advanced">Advanced</TabsTrigger>
+          <TabsTrigger value="design">Design</TabsTrigger> */}
         </TabsList>
         <TabsContent value="basic" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -56,29 +119,45 @@ export default function CreatePage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="url">URL</SelectItem>
-                        <SelectItem value="text">Text</SelectItem>
+                        {/* <SelectItem value="text">Text</SelectItem>
                         <SelectItem value="email">Email</SelectItem>
                         <SelectItem value="phone">Phone</SelectItem>
                         <SelectItem value="sms">SMS</SelectItem>
-                        <SelectItem value="vcard">vCard</SelectItem>
+                        <SelectItem value="vcard">vCard</SelectItem> */}
                       </SelectContent>
                     </Select>
                   </div>
-
                   {qrType === "url" && (
                     <div className="space-y-2">
+                      {" "}
                       <Label htmlFor="url">URL</Label>
-                      <Input id="url" placeholder="https://example.com" />
+                      <Input
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        id="url"
+                        placeholder="https://example.com"
+                        required
+                      />{" "}
+                      <div className="flex items-center gap-2 mt-4">
+                        <Input
+                          type="checkbox"
+                          id="custom-url"
+                          checked={custom}
+                          onChange={() => setCustom(!custom)}
+                          className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                        />
+                        <Label htmlFor="custom-url">
+                          Custom QR with favicon
+                        </Label>
+                      </div>
                     </div>
                   )}
-
                   {qrType === "text" && (
                     <div className="space-y-2">
                       <Label htmlFor="text">Text</Label>
                       <Textarea id="text" placeholder="Enter your text here" />
                     </div>
                   )}
-
                   {qrType === "email" && (
                     <div className="space-y-4">
                       <div className="space-y-2">
@@ -95,26 +174,46 @@ export default function CreatePage() {
                       </div>
                     </div>
                   )}
-
                   {qrType === "phone" && (
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number</Label>
                       <Input id="phone" placeholder="+1 (555) 123-4567" />
                     </div>
-                  )}
-
+                  )}{" "}
                   <div className="space-y-2">
                     <Label htmlFor="name">QR Code Name</Label>
-                    <Input id="name" placeholder="My QR Code" />
+                    <Input
+                      id="name"
+                      placeholder="My QR Code"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
                     <p className="text-xs text-muted-foreground">
                       This name is for your reference only and won't be encoded
                       in the QR code.
                     </p>
                   </div>
-                </CardContent>
+                </CardContent>{" "}
                 <CardFooter className="flex justify-between">
-                  <Button variant="outline">Reset</Button>
-                  <Button>Generate QR Code</Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setUrl("");
+                      setName("");
+                      setCustom(false);
+                      setImage(null);
+                      setError(null);
+                    }}
+                    disabled={isLoading}
+                  >
+                    Reset
+                  </Button>
+                  <Button
+                    onClick={handleGenerateQrCode}
+                    disabled={!url || isLoading}
+                  >
+                    {isLoading ? "Generating..." : "Generate QR Code"}
+                  </Button>
                 </CardFooter>
               </Card>
             </div>
@@ -123,11 +222,28 @@ export default function CreatePage() {
                 <CardHeader>
                   <CardTitle>Preview</CardTitle>
                   <CardDescription>QR code preview</CardDescription>
-                </CardHeader>
+                </CardHeader>{" "}
                 <CardContent className="flex flex-col items-center justify-center">
                   <div className="flex h-48 w-48 items-center justify-center rounded-md border-2 border-dashed">
-                    <QrCode className="h-24 w-24 text-muted-foreground" />
+                    {isLoading && (
+                      <div className="animate-spin h-12 w-12 rounded-full border-t-2 border-primary"></div>
+                    )}
+                    {!isLoading && !image && (
+                      <QrCode className="h-24 w-24 text-muted-foreground" />
+                    )}
+                    {!isLoading && image && (
+                      <Image
+                        src={image as string}
+                        alt={`${name || "QR"} Code`}
+                        width={96}
+                        height={96}
+                        className="h-auto max-h-full w-auto max-w-full object-contain"
+                      />
+                    )}
                   </div>
+                  {error && (
+                    <p className="mt-4 text-sm text-red-500">{error}</p>
+                  )}
                 </CardContent>
                 <CardFooter className="flex justify-center">
                   <Button variant="outline" className="w-full">

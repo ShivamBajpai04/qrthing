@@ -1,4 +1,3 @@
-import Navbar from "@/components/navbar";
 import { SignIn } from "@clerk/nextjs";
 
 export default function Page() {

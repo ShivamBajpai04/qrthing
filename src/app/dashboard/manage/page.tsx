@@ -1,3 +1,4 @@
+"use client";
 import { Edit, MoreHorizontal, QrCode, Trash } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -25,8 +26,62 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useState } from "react";
+import { useUserContext } from "@/context/user-context";
+import Image from "next/image";
+import { format } from "date-fns";
 
 export default function ManagePage() {
+  const { qrCodes, qrCodesLoading, qrCodesError, refreshQrCodes } =
+    useUserContext();
+  const [search, setSearch] = useState("");
+
+  // Filter QR codes based on search term
+  const filteredQrCodes = qrCodes.filter(
+    (qr) =>
+      qr.name.toLowerCase().includes(search.toLowerCase()) ||
+      qr.url.toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (qrCodesLoading) {
+    return <div>Loading your QR codes...</div>;
+  }
+
+  if (qrCodesError) {
+    return (
+      <div className="flex flex-col gap-4">
+        <h2 className="text-2xl font-bold tracking-tight">Manage QR Codes</h2>
+        <Card>
+          <CardHeader>
+            <CardTitle>Error</CardTitle>
+            <CardDescription>
+              Failed to load your QR codes: {qrCodesError}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => refreshQrCodes()}>Retry</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (qrCodes.length === 0) {
+    return (
+      <div className="flex flex-col gap-4">
+        <h2 className="text-2xl font-bold tracking-tight">Manage QR Codes</h2>
+        <Card>
+          <CardHeader>
+            <CardTitle>Your QR Codes</CardTitle>
+            <CardDescription>
+              You have no QR codes yet. Create one to get started!
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-2xl font-bold tracking-tight">Manage QR Codes</h2>
@@ -44,6 +99,8 @@ export default function ManagePage() {
                 <Input
                   placeholder="Search QR codes..."
                   className="w-[250px] pl-8"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -59,7 +116,7 @@ export default function ManagePage() {
                   <path d="m21 21-4.35-4.35" />
                 </svg>
               </div>
-              <Button>Create New</Button>
+              <Button onClick={() => refreshQrCodes()}>Refresh</Button>
             </div>
           </div>
         </CardHeader>
@@ -69,60 +126,38 @@ export default function ManagePage() {
               <TableRow>
                 <TableHead className="w-[80px]">QR Code</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
+                <TableHead>URL</TableHead>
                 <TableHead>Created</TableHead>
                 <TableHead>Scans</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {[
-                {
-                  id: 1,
-                  name: "Product Brochure",
-                  type: "URL",
-                  created: "May 15, 2023",
-                  scans: 2345,
-                },
-                {
-                  id: 2,
-                  name: "Event Registration",
-                  type: "URL",
-                  created: "Jun 22, 2023",
-                  scans: 1872,
-                },
-                {
-                  id: 3,
-                  name: "Contact Information",
-                  type: "vCard",
-                  created: "Jul 10, 2023",
-                  scans: 1254,
-                },
-                {
-                  id: 4,
-                  name: "Discount Coupon",
-                  type: "Text",
-                  created: "Aug 05, 2023",
-                  scans: 987,
-                },
-                {
-                  id: 5,
-                  name: "Support Email",
-                  type: "Email",
-                  created: "Sep 18, 2023",
-                  scans: 654,
-                },
-              ].map((qr) => (
+              {filteredQrCodes.map((qr) => (
                 <TableRow key={qr.id}>
                   <TableCell>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-md border">
-                      <QrCode className="h-6 w-6" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-md border overflow-hidden">
+                      {qr.imageUrl ? (
+                        <Image
+                          src={qr.imageUrl}
+                          alt={qr.name}
+                          width={40}
+                          height={40}
+                          className="object-contain"
+                        />
+                      ) : (
+                        <QrCode className="h-6 w-6" />
+                      )}
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">{qr.name}</TableCell>
-                  <TableCell>{qr.type}</TableCell>
-                  <TableCell>{qr.created}</TableCell>
-                  <TableCell>{qr.scans.toLocaleString()}</TableCell>
+                  <TableCell className="max-w-[200px] truncate">
+                    {qr.url}
+                  </TableCell>
+                  <TableCell>
+                    {format(new Date(qr.createdAt), "MMM dd, yyyy")}
+                  </TableCell>
+                  <TableCell>{qr.accessCount.toLocaleString()}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

@@ -25,6 +25,8 @@ model Scan {
 
 model Url {
   id             Int       @id @default(autoincrement())
+  name           String
+  creatorId      String
   hash           String    @unique
   url            String
   createdAt      DateTime  @default(now())

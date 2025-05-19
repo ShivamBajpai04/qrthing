@@ -1,26 +1,23 @@
-import { NextResponse } from "next/server";
-import type { NextRequest, NextFetchEvent } from "next/server";
-import { middleware as activatedMiddleware } from "@/middleware/config";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-export async function middleware(req: NextRequest, event: NextFetchEvent) {
-  const nextResponse = NextResponse.next();
+// Define routes that should be accessible without authentication
+const isPublicRoute = createRouteMatcher([
+  "/", // Home page
+  "/sign-in(.*)", // Sign-in pages
+  "/api/scan/(.*)", // QR code scanning endpoints should be public
+]);
 
-  const middlewareFunctions = activatedMiddleware.map((fn) => fn(req, event));
-
-  for (const middleware of middlewareFunctions) {
-    const result = await middleware;
-    if (result && result !== nextResponse) {
-      return result;
-    }
+export default clerkMiddleware(async (auth, req) => {
+  if (!isPublicRoute(req)) {
+    await auth.protect();
   }
-  return nextResponse;
-}
+});
 
 export const config = {
   matcher: [
-    // Include all routes, including API routes
-    "/(.*)",
-    // Exclude static assets and images
-    "/((?!_next/static|.*svg|.*png|.*jpg|.*jpeg|.*gif|.*webp|_next/image|favicon.ico).*)",
+    // Skip Next.js internals and all static files
+    "/((?!_next/static|_next/image|.*\\.png$|.*\\.jpg$|.*\\.svg$|.*\\.ico$|favicon.ico).*)",
+    // Always include API routes (except scan endpoints which are handled by isPublicRoute)
+    "/api/((?!scan).*)",
   ],
 };

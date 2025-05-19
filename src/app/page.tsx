@@ -2,54 +2,13 @@ import Link from "next/link";
 import { ArrowRight, BarChart3, CheckCircle, QrCode, Zap } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
+import Navbar from "@/components/navbar";
 
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
       {" "}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-6 md:px-10 lg:px-12 flex h-16 items-center justify-between">
-          <div className="flex items-center gap-3 font-bold">
-            <QrCode className="h-6 w-6" />
-            <span>QRThing</span>
-          </div>
-          <nav className="hidden gap-8 md:flex">
-            <Link
-              href="#features"
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              Features
-            </Link>
-            <Link
-              href="#pricing"
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              Pricing
-            </Link>
-            <Link
-              href="#testimonials"
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              Testimonials
-            </Link>
-          </nav>
-          <div className="flex items-center gap-5">
-            <ThemeToggle />
-            <Link href="/login">
-              <Button variant="ghost" size="sm">
-                Login
-              </Button>
-            </Link>
-            <Link href="/dashboard">
-              <Button size="sm">
-                Dashboard
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Navbar />
       <main className="flex-1">
         {" "}
         <section className="space-y-8 pb-12 pt-16 md:pb-16 md:pt-28 lg:py-36">

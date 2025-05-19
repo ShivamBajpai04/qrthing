@@ -2124,6 +2124,8 @@ export namespace Prisma {
 
   export type UrlMinAggregateOutputType = {
     id: number | null
+    name: string | null
+    creatorId: string | null
     hash: string | null
     url: string | null
     createdAt: Date | null
@@ -2134,6 +2136,8 @@ export namespace Prisma {
 
   export type UrlMaxAggregateOutputType = {
     id: number | null
+    name: string | null
+    creatorId: string | null
     hash: string | null
     url: string | null
     createdAt: Date | null
@@ -2144,6 +2148,8 @@ export namespace Prisma {
 
   export type UrlCountAggregateOutputType = {
     id: number
+    name: number
+    creatorId: number
     hash: number
     url: number
     createdAt: number
@@ -2166,6 +2172,8 @@ export namespace Prisma {
 
   export type UrlMinAggregateInputType = {
     id?: true
+    name?: true
+    creatorId?: true
     hash?: true
     url?: true
     createdAt?: true
@@ -2176,6 +2184,8 @@ export namespace Prisma {
 
   export type UrlMaxAggregateInputType = {
     id?: true
+    name?: true
+    creatorId?: true
     hash?: true
     url?: true
     createdAt?: true
@@ -2186,6 +2196,8 @@ export namespace Prisma {
 
   export type UrlCountAggregateInputType = {
     id?: true
+    name?: true
+    creatorId?: true
     hash?: true
     url?: true
     createdAt?: true
@@ -2283,6 +2295,8 @@ export namespace Prisma {
 
   export type UrlGroupByOutputType = {
     id: number
+    name: string
+    creatorId: string
     hash: string
     url: string
     createdAt: Date
@@ -2312,6 +2326,8 @@ export namespace Prisma {
 
   export type UrlSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    name?: boolean
+    creatorId?: boolean
     hash?: boolean
     url?: boolean
     createdAt?: boolean
@@ -2324,6 +2340,8 @@ export namespace Prisma {
 
   export type UrlSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    name?: boolean
+    creatorId?: boolean
     hash?: boolean
     url?: boolean
     createdAt?: boolean
@@ -2334,6 +2352,8 @@ export namespace Prisma {
 
   export type UrlSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    name?: boolean
+    creatorId?: boolean
     hash?: boolean
     url?: boolean
     createdAt?: boolean
@@ -2344,6 +2364,8 @@ export namespace Prisma {
 
   export type UrlSelectScalar = {
     id?: boolean
+    name?: boolean
+    creatorId?: boolean
     hash?: boolean
     url?: boolean
     createdAt?: boolean
@@ -2352,7 +2374,7 @@ export namespace Prisma {
     lastAccessedAt?: boolean
   }
 
-  export type UrlOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "hash" | "url" | "createdAt" | "updatedAt" | "accessCount" | "lastAccessedAt", ExtArgs["result"]["url"]>
+  export type UrlOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "creatorId" | "hash" | "url" | "createdAt" | "updatedAt" | "accessCount" | "lastAccessedAt", ExtArgs["result"]["url"]>
   export type UrlInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     scans?: boolean | Url$scansArgs<ExtArgs>
     _count?: boolean | UrlCountOutputTypeDefaultArgs<ExtArgs>
@@ -2367,6 +2389,8 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
+      name: string
+      creatorId: string
       hash: string
       url: string
       createdAt: Date
@@ -2798,6 +2822,8 @@ export namespace Prisma {
    */
   interface UrlFieldRefs {
     readonly id: FieldRef<"Url", 'Int'>
+    readonly name: FieldRef<"Url", 'String'>
+    readonly creatorId: FieldRef<"Url", 'String'>
     readonly hash: FieldRef<"Url", 'String'>
     readonly url: FieldRef<"Url", 'String'>
     readonly createdAt: FieldRef<"Url", 'DateTime'>
@@ -3260,6 +3286,8 @@ export namespace Prisma {
 
   export const UrlScalarFieldEnum: {
     id: 'id',
+    name: 'name',
+    creatorId: 'creatorId',
     hash: 'hash',
     url: 'url',
     createdAt: 'createdAt',
@@ -3416,6 +3444,8 @@ export namespace Prisma {
     OR?: UrlWhereInput[]
     NOT?: UrlWhereInput | UrlWhereInput[]
     id?: IntFilter<"Url"> | number
+    name?: StringFilter<"Url"> | string
+    creatorId?: StringFilter<"Url"> | string
     hash?: StringFilter<"Url"> | string
     url?: StringFilter<"Url"> | string
     createdAt?: DateTimeFilter<"Url"> | Date | string
@@ -3427,6 +3457,8 @@ export namespace Prisma {
 
   export type UrlOrderByWithRelationInput = {
     id?: SortOrder
+    name?: SortOrder
+    creatorId?: SortOrder
     hash?: SortOrder
     url?: SortOrder
     createdAt?: SortOrder
@@ -3442,6 +3474,8 @@ export namespace Prisma {
     AND?: UrlWhereInput | UrlWhereInput[]
     OR?: UrlWhereInput[]
     NOT?: UrlWhereInput | UrlWhereInput[]
+    name?: StringFilter<"Url"> | string
+    creatorId?: StringFilter<"Url"> | string
     url?: StringFilter<"Url"> | string
     createdAt?: DateTimeFilter<"Url"> | Date | string
     updatedAt?: DateTimeFilter<"Url"> | Date | string
@@ -3452,6 +3486,8 @@ export namespace Prisma {
 
   export type UrlOrderByWithAggregationInput = {
     id?: SortOrder
+    name?: SortOrder
+    creatorId?: SortOrder
     hash?: SortOrder
     url?: SortOrder
     createdAt?: SortOrder
@@ -3470,6 +3506,8 @@ export namespace Prisma {
     OR?: UrlScalarWhereWithAggregatesInput[]
     NOT?: UrlScalarWhereWithAggregatesInput | UrlScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Url"> | number
+    name?: StringWithAggregatesFilter<"Url"> | string
+    creatorId?: StringWithAggregatesFilter<"Url"> | string
     hash?: StringWithAggregatesFilter<"Url"> | string
     url?: StringWithAggregatesFilter<"Url"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Url"> | Date | string
@@ -3524,6 +3562,8 @@ export namespace Prisma {
   }
 
   export type UrlCreateInput = {
+    name: string
+    creatorId: string
     hash: string
     url: string
     createdAt?: Date | string
@@ -3535,6 +3575,8 @@ export namespace Prisma {
 
   export type UrlUncheckedCreateInput = {
     id?: number
+    name: string
+    creatorId: string
     hash: string
     url: string
     createdAt?: Date | string
@@ -3545,6 +3587,8 @@ export namespace Prisma {
   }
 
   export type UrlUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    creatorId?: StringFieldUpdateOperationsInput | string
     hash?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -3556,6 +3600,8 @@ export namespace Prisma {
 
   export type UrlUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    creatorId?: StringFieldUpdateOperationsInput | string
     hash?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -3567,6 +3613,8 @@ export namespace Prisma {
 
   export type UrlCreateManyInput = {
     id?: number
+    name: string
+    creatorId: string
     hash: string
     url: string
     createdAt?: Date | string
@@ -3576,6 +3624,8 @@ export namespace Prisma {
   }
 
   export type UrlUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    creatorId?: StringFieldUpdateOperationsInput | string
     hash?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -3586,6 +3636,8 @@ export namespace Prisma {
 
   export type UrlUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    creatorId?: StringFieldUpdateOperationsInput | string
     hash?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -3769,6 +3821,8 @@ export namespace Prisma {
 
   export type UrlCountOrderByAggregateInput = {
     id?: SortOrder
+    name?: SortOrder
+    creatorId?: SortOrder
     hash?: SortOrder
     url?: SortOrder
     createdAt?: SortOrder
@@ -3784,6 +3838,8 @@ export namespace Prisma {
 
   export type UrlMaxOrderByAggregateInput = {
     id?: SortOrder
+    name?: SortOrder
+    creatorId?: SortOrder
     hash?: SortOrder
     url?: SortOrder
     createdAt?: SortOrder
@@ -3794,6 +3850,8 @@ export namespace Prisma {
 
   export type UrlMinOrderByAggregateInput = {
     id?: SortOrder
+    name?: SortOrder
+    creatorId?: SortOrder
     hash?: SortOrder
     url?: SortOrder
     createdAt?: SortOrder
@@ -4121,6 +4179,8 @@ export namespace Prisma {
   }
 
   export type UrlCreateWithoutScansInput = {
+    name: string
+    creatorId: string
     hash: string
     url: string
     createdAt?: Date | string
@@ -4131,6 +4191,8 @@ export namespace Prisma {
 
   export type UrlUncheckedCreateWithoutScansInput = {
     id?: number
+    name: string
+    creatorId: string
     hash: string
     url: string
     createdAt?: Date | string
@@ -4156,6 +4218,8 @@ export namespace Prisma {
   }
 
   export type UrlUpdateWithoutScansInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    creatorId?: StringFieldUpdateOperationsInput | string
     hash?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -4166,6 +4230,8 @@ export namespace Prisma {
 
   export type UrlUncheckedUpdateWithoutScansInput = {
     id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    creatorId?: StringFieldUpdateOperationsInput | string
     hash?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

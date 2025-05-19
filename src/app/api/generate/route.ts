@@ -14,8 +14,12 @@ export const OPTIONS = handleOptionsRequest;
 
 export async function POST(req: NextRequest) {
   try {
-    const { url } = await req.json();
-    const hash = hasher(url).toString();
+    const {
+      url,
+      name,
+      creatorId,
+    }: { url: string; name: string; creatorId: string } = await req.json();
+    const hash = hasher(url);
     const safeName = sanitizeFilename(hash);
 
     // Generate QR code as buffer
@@ -39,6 +43,8 @@ export async function POST(req: NextRequest) {
     // Save URL in database
     await prisma.url.create({
       data: {
+        creatorId,
+        name,
         url,
         hash,
       },

@@ -129,6 +129,8 @@ exports.Prisma.ScanScalarFieldEnum = {
 
 exports.Prisma.UrlScalarFieldEnum = {
   id: 'id',
+  name: 'name',
+  creatorId: 'creatorId',
   hash: 'hash',
   url: 'url',
   createdAt: 'createdAt',

@@ -17,8 +17,12 @@ export const OPTIONS = handleOptionsRequest;
 
 export async function POST(req: NextRequest) {
   try {
-    const { url } = await req.json();
-    const hash = hasher(url).toString();
+    const {
+      url,
+      name,
+      creatorId,
+    }: { url: string; name: string; creatorId: string } = await req.json();
+    const hash = hasher(url);
     const safeName = sanitizeFilename(hash);
     const customName = `${safeName}_custom`;
 
@@ -59,11 +63,12 @@ export async function POST(req: NextRequest) {
       "qr-codes",
       customName
     );
-
     await prisma.url.create({
       data: {
         url,
         hash,
+        name: name || "Untitled QR Code",
+        creatorId: creatorId || "anonymous",
       },
     });
 
